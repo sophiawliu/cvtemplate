@@ -12,210 +12,264 @@
 %!TEX TS-program = xelatex
 %!TEX encoding = UTF-8 Unicode
 
-\documentclass[11.5pt, a4paper]{article}
+\documentclass[10pt, a4paper]{article}
 \usepackage{fontspec}
 
 % DOCUMENT LAYOUT
 \usepackage{geometry}
-\geometry{a4paper, textwidth=5in, textheight=8in, marginparsep=5pt, marginparwidth=.6in}
+\geometry{a4paper, margin=0.5in, includefoot}
 \setlength\parindent{0in}
 
 % FONTS
 \usepackage[usenames,dvipsnames]{xcolor}
+\definecolor{linkblue}{HTML}{6c8f98}
 \usepackage{xunicode}
 \usepackage{xltxtra}
 \defaultfontfeatures{Mapping=tex-text}
 %\setromanfont [Ligatures={Common}, Numbers={OldStyle}, Variant=01]{Linux Libertine O}
 %\setmonofont[Scale=0.8]{Monaco}
 
-\setmainfont[
-  Ligatures={Common}, Numbers={OldStyle}, Variant=01,
-  BoldFont=LinLibertine_RB.otf,
-  ItalicFont=LinLibertine_RI.otf,
-  BoldItalicFont=LinLibertine_RBI.otf
-]{LinLibertine_R.otf}
-\setmonofont[Scale=0.8]{DejaVuSansMono.ttf}
+\setmainfont{Geist-VariableFont_wght.ttf}[
+  Ligatures=TeX,
+  BoldFont=Geist-VariableFont_wght.ttf,
+  BoldFeatures={FakeBold=5.5},
+  ItalicFont=Geist-VariableFont_wght.ttf,
+  ItalicFeatures={},
+  BoldItalicFont=Geist-VariableFont_wght.ttf,
+  BoldItalicFeatures={FakeBold=5.5}
+]
+\setmonofont{GeistMono-VariableFont_wght.ttf}[
+  Scale=0.85,
+  BoldFont=GeistMono-VariableFont_wght.ttf,
+  BoldFeatures={FakeBold=3}
+]
 
 % ---- CUSTOM COMMANDS
-\chardef\&="E050
 \newcommand{\html}[1]{\href{#1}{\scriptsize\textsc{[html]}}}
 \newcommand{\pdf}[1]{\href{#1}{\scriptsize\textsc{[pdf]}}}
 \newcommand{\doi}[1]{\href{#1}{\scriptsize\textsc{[doi]}}}
-% ---- MARGIN YEARS
-\usepackage{marginnote}
-\newcommand{\amper{}}{\chardef\amper="E0BD }
-\newcommand{\years}[1]{\marginnote{\scriptsize #1}}
-\renewcommand*{\raggedleftmarginnote}{}
-\setlength{\marginparsep}{7pt}
-\reversemarginpar
+\newcommand{\paper}[1]{\href{#1}{\scriptsize\textsc{[paper]}}}
+\newcommand{\preprint}[1]{\href{#1}{\scriptsize\textsc{[preprint]}}}
+\newcommand{\poster}[1]{\href{#1}{\scriptsize\textsc{[poster]}}}
+\newcommand{\slides}[1]{\href{#1}{\scriptsize\textsc{[slides]}}}
+\newcommand{\recording}[1]{\href{#1}{\scriptsize\textsc{[recording]}}}
+\newcommand{\pubtitle}[2]{\href{#1}{\textcolor{black}{\textbf{#2}}}}
+\newcommand{\bluelink}[2]{\href{#1}{\textcolor{linkblue}{#2}}}
+\newcommand{\award}[1]{\textcolor{linkblue}{\faAward~#1}}
+\newcommand{\me}{\raisebox{0pt}[\height][0pt]{\underline{SW Liu}}}
+\newcommand{\sliu}{\raisebox{0pt}[\height][0pt]{\underline{S Liu}}}
+% ---- YEARS COLUMN
+\newfontfamily{\yearfont}{GeistMono-VariableFont_wght.ttf}
+\newlength{\yearswidth}
+\newlength{\yearsgap}
+\newlength{\yearshang}
+\setlength{\yearsgap}{1em}
+\newcommand{\setyearwidth}[1]{%
+  \settowidth{\yearswidth}{\yearfont #1}%
+  \setlength{\yearshang}{\yearswidth}%
+  \addtolength{\yearshang}{\yearsgap}%
+}
+\setyearwidth{2024 \& 2025}
+\newlength{\entrygap}
+\setlength{\entrygap}{0.4em}
+\newlength{\nextentrygap}
+\setlength{\nextentrygap}{0.4em}
+\newcommand{\years}[1]{%
+  \par\addvspace{\nextentrygap}%
+  \setlength{\nextentrygap}{\entrygap}%
+  \noindent
+  \hangindent=\yearshang
+  \hangafter=1
+  \makebox[\yearswidth][r]{\yearfont\mbox{#1}}\hspace{\yearsgap}%
+  \ignorespaces
+}
+\newcommand{\noyear}{%
+  \par\addvspace{\nextentrygap}%
+  \setlength{\nextentrygap}{\entrygap}%
+  \noindent
+  \hangindent=\yearshang
+  \hangafter=0
+  \ignorespaces
+}
+\newcommand{\pubnl}{\\[0.12em]}
 
 % HEADINGS
-\usepackage{sectsty}
+\usepackage{titlesec}
 \usepackage[normalem]{ulem}
-\sectionfont{\mdseries\upshape\Large}
-\subsectionfont{\mdseries\scshape\normalsize}
-\subsubsectionfont{\mdseries\upshape\large}
+\usepackage{marvosym}
+\usepackage{fontawesome5}
+\newlength{\sectionbarheight}
+\setlength{\sectionbarheight}{4.5pt}
+\newcommand{\sectionbar}{%
+  \makebox[\yearswidth][l]{%
+    \raisebox{\dimexpr0.5\fontcharht\font`E-0.5\sectionbarheight\relax}[\fontcharht\font`E][0pt]{%
+      \textcolor{black!12}{\rule{\yearswidth}{\sectionbarheight}}%
+    }%
+  }\hspace{\yearsgap}%
+}
+\titleformat{\section}
+  {\mdseries\upshape\Large}
+  {}{0pt}{\sectionbar}
+\newlength{\sectiongap}
+\setlength{\sectiongap}{1.15em}
+\titlespacing*{\section}{0pt}{0pt}{0.15em}
+\let\cvsection\section
+\renewcommand{\section}{\par\vspace{\sectiongap}\setlength{\nextentrygap}{0.4em}\cvsection}
+\titleformat{\subsection}
+  {\mdseries\scshape\normalsize}
+  {}{0pt}{}
+\titlespacing*{\subsection}{0pt}{0.8em}{0.3em}
 
 
 % PDF SETUP
 % ---- FILL IN HERE THE DOC TITLE AND AUTHOR
 \usepackage[%dvipdfm,
-bookmarks, colorlinks, breaklinks,
+bookmarks, breaklinks, hidelinks,
 % ---- FILL IN HERE THE TITLE AND AUTHOR
-	pdftitle={Sherry Yong Chen - CV},
-	pdfauthor={Sherry Yong Chen},
+	pdftitle={Sophia W. Liu - CV},
+	pdfauthor={Sophia W. Liu},
 	pdfproducer={http://nitens.org/taraborelli/cvtex}
 ]{hyperref}
-\hypersetup{linkcolor=black,citecolor=black,filecolor=black,urlcolor=black}
-
-%SYMBOLS
-\usepackage[misc]{ifsym}
-\usepackage{marvosym}
-\usepackage{url}
-\usepackage{fontspec}
-\usepackage{fontawesome}
-\newfontfamily{\FA}{fontawesome.otf}
-
+\hypersetup{hidelinks}
+\newcommand{\monthyear}{%
+  \ifcase\month\or
+  January\or February\or March\or April\or May\or June\or
+  July\or August\or September\or October\or November\or December\fi
+  \ \number\year
+}
+\newcommand{\cvfoot}{%
+  \parbox{\textwidth}{%
+    \textcolor{black!12}{\rule{\textwidth}{0.4pt}}\\[0.35em]
+    \scriptsize\textcolor{black!40}{Last updated: \monthyear}%
+    \hfill
+    \scriptsize\textcolor{black!40}{\thepage\ of \pageref{LastPage}}%
+  }%
+}
+\makeatletter
+\renewcommand{\@oddfoot}{\cvfoot}
+\renewcommand{\@evenfoot}{\cvfoot}
+\makeatother
 
 % DOCUMENT
 \begin{document}
-{\Huge NAME}\\[1cm]
-Address \\
-Country \\[.2cm]
-\Letter{ email@gmail.com} \\
-\Mundus~\url{ http://yourname.org} \\
-\faGithub \thinspace \href{https://github.com/yourID}{\thinspace ID}
-\faTwitter \href{link}{\thinspace accountname} \\
-
-%%\hrule
-\section*{\faLightbulbO \thinspace Areas of interest}
-
-\years{Broad} Blah blah \\
-\years{Narrow} Blah blah Blah \\
-
-%\hrule
-\section*{\faGraduationCap \thinspace Education}
-
-\subsection*{Degree seeking programs}
 \noindent
-\years{2015-2017}\textbf{B.A in Linguistics}, University of Blah  \\
- • First Class Honours \\
- • Special recognition: Undergraduate Research Fellow
+\begin{minipage}[c]{0.55\linewidth}
+{\huge Sophia W. Liu}\\[0.65em]
+\textcolor{black!40}{Curriculum Vitae}
+\end{minipage}\hfill
+\begin{minipage}[c]{0.45\linewidth}
+\raggedleft\small
+\textcolor{linkblue}{\Letter}~\bluelink{mailto:sophiawliu@berkeley.edu}{sophiawliu@berkeley.edu}\\
+\textcolor{linkblue}{\Mundus}~\bluelink{https://sophiawliu.com}{sophiawliu.com}
+\end{minipage}
 
- %\hrule
- \subsection*{Non-degree studies}
- \noindent
- \years{2017 Summer}Some Summer School, University of Blah, Country \\
+\vspace{2.0em}
+\cvsection*{Education}
+
+\years{Exp.2027}\textbf{M.S. in Electrical Engineering and Computer Science}, University of California, Berkeley
+\years{2022--2026}\textbf{B.A. in Computer Science}, University of California, Berkeley
 
 
 %\hrule
-\section*{\faUniversity \thinspace Research experiences}
+\section*{Research Experience}
 
-\years{2015-2017}Research Assistant in A Very Nice Lab, \textsc{University of Blah} \\
-  • PI: Dr Blah Blah \\
-  • Projects: Blah Blah Blah \\
+\years{2026--}\textbf{Graduate Research Assistant}, \textsc{UC Berkeley}, Berkeley Institute of Design
 
+\years{2025--2026}\textbf{Undergraduate Research Assistant}, \textsc{UC Berkeley}, Berkeley Institute of Design
 
-%\hrule
-\section*{\faBook \thinspace Publications}
-
-\subsection*{Book chapters}
-\noindent
-\years{2017}\textbf{Name.} Title. Book.
-
-\subsection*{Articles}
-\noindent
-\years{2017}\textbf{Name.} Title. Jounral. \\
-
-%\hrule
-\section*{\faEdit \thinspace Manuscripts}
-
-\subsection*{Work in progress}
-\noindent
-\years{2017}\textbf{Name.} Title.
-
-\subsection*{Thesis \& Research papers}
-\noindent
-\years{2017}\textbf{Name.} Title. \\
+\years{2025}\textbf{Research Intern (NSF REU)}, \textsc{Carnegie Mellon University}, Human-Computer Interaction Institute
 
 
 %\hrule
-\section*{\faMicrophone \thinspace Posters \& Presentations}
+\section*{Preprints}
+\setlength{\entrygap}{0.95em}
 
-\subsection*{Oral presentations}
-\noindent
-\years{2017}\textbf{Name.} Title. Presentation given at Blah Conference, Date \& Year, Univeristy of Blah, Country.
-
-\subsection*{Conference posters}
-\noindent
-\years{2017}\textbf{Name.} Title. Poster presented at Blah Conference, Date \& Year, Place, Country.
-
-
-\subsection*{Public talks}
-\noindent
-\years{2017}\textbf{Name.} Title. Talk given at Blah Event, Date \& Year, Organizer, Country. \\
+\years{2026}\pubtitle{https://sophiawliu.com/assets/feeling_wistful.pdf}{Feeling Wistful: Reflecting on Scholarly Sensibilities with Creative Reading Traces} \pubnl
+\me, K Chier, SG Almeda, M Kreminski, B Hartmann\par
 
 
 %\hrule
-\section*{\faTrophy \thinspace Honors, awards \& scholarships}
+\section*{Publications}
 
-\years{2016-2017}Blah Scholarship, University of Blah \\
+\years{2026}\pubtitle{https://arxiv.org/abs/2607.09155}{Feeling UISTful: An Interactive Portrait of Scholarly Authorship, Readership, and the In-Between} \pubnl
+ACM Symposium on User Interface Software and Technology (UIST), Demo Track \pubnl
+\me, SG Almeda, M Kreminski, B Hartmann\par
 
+\years{2026}\pubtitle{https://dl.acm.org/doi/10.1145/3800935.3830891}{Creative Reading: Scaffolding Reading for Transformation} \pubnl
+ACM Conference on Hypertext \& Social Media (HT), Blue Sky Track \pubnl
+\sliu, S Abowitz, Y Liu, S Sterman, SG Almeda, M Kreminski\par
 
-%\hrule
-\section*{\faMoney \thinspace Fundings \& grants}
+\years{2026}\pubtitle{https://dl.acm.org/doi/10.1145/3803784.3807532}{Artographer: a Curatorial Interface for Art Space Exploration} \pubnl
+ACM Creativity and Cognition Conference (C\&C) \pubnl
+SG Almeda, JJY Chung, \sliu, BA Halperin, Y Lu, B Hartmann, M Kreminski \pubnl
+\award{Best Paper Honorable Mention (Top 5\%)}\par
 
-\subsection*{Internal \& External fundings}
-\noindent
-\years{2016-2017}Departmental Funding
+\years{2026}\pubtitle{https://dl.acm.org/doi/10.1145/3772318.3790500}{Botender: Supporting Communities in Collaboratively Designing AI Agents through Case-Based Provocations} \pubnl
+ACM Conference on Human Factors in Computing Systems (CHI) \pubnl
+T-S Kuo, \sliu, QZ Chen, J Seering, AX Zhang, H Zhu, K Holstein\par
 
-\subsection*{Travel grants}
-\noindent
-\years{2015-2017}Faculty Travel Grant, University of Blah \\
-
-
-%\hrule
-\section*{\faCalendarCheckO \thinspace Professional services}
-
-\subsection*{Reviewing}
-\noindent
-\years{2017-}\emph{Journal}.
-
-\subsection*{Organizing}
-\noindent
-\years{2016-2017}Organizer, \emph{Event}. Department of Blah, University of Blah \\
-
-\subsection*{Outreach}
-\noindent
-\years{2017 Spring}Linguistic Consultant for \emph{Event}, Organizer \\
+\years{2025}\pubtitle{https://dl.acm.org/doi/full/10.1145/3720533.3750065}{Agency Among Agents: Designing with Hypertextual Friction in the Algorithmic Web} \pubnl
+ACM Conference on Hypertext \& Social Media (HT), Blue Sky Track \pubnl
+\sliu, SG Almeda \pubnl
+\award{CRA CCC Blue Sky Award}\par
 
 
 %\hrule
-\section*{\faUsers \thinspace Membership}
+\section*{Workshop Publications}
 
-\years{2017-}Linguistic Society of Blah \\
+\years{2026}\pubtitle{https://arxiv.org/abs/2603.11031}{Chasing RATs: Tracing Reading for and as Creative Activity} \pubnl
+Herding CATs @ CHI \pubnl
+\sliu, SG Almeda\par
+
+\years{2026}\pubtitle{https://wikiworkshop.org/2026/paper/wikiworkshop_2026_46_revisiting_the_rabbit_hole_the_hypertextual_friction_of_wikipedia}{Revisiting the Rabbit Hole: The Hypertextual Friction of Wikipedia} \pubnl
+Wiki Workshop \pubnl
+\sliu, SG Almeda\par
 
 
 %\hrule
-\section*{\faWrench \thinspace Skills}
+\section*{Honors, Awards \& Grants}
+\setlength{\entrygap}{0.4em}
 
-\subsection*{Languages}
-English: full professional proficiency \\
-Spanish and German: elementary level
+\years{2026}ACM C\&C Best Paper Honorable Mention Award
+\years{2026}ACM CHI NSF CRA CISE REU Travel Grant (\$1,200)
+\years{2026}ACM HT Travel Grant (\$1,000)
+\years{2025}ACM HT CRA CCC Blue Sky Award (\$500)
+\years{2025}ACM HT Travel Grant (\$500)
+\years{2025}UC Berkeley EECS Evergreen Undergraduate Research Award (\$350)
+\years{2024 \& 2025}UC Berkeley EECS Grace Hopper Celebration Scholarship
+\years{2023--2026}Upsilon Pi Epsilon
 
-\subsection*{Computing}
-Programming \& Statistics: R, SPSS, JavaScript, Python \\
-Experimental: E-Prime, E-Run, Experiment Builder, Eyelink \\
+
+%\hrule
+\section*{Teaching Experience}
+
+\years{2024--2026}\textbf{Head Teaching Assistant}, CS 61A: Structure and Interpretation of Computer Programs
+
+\years{2025}\textbf{Head Teaching Assistant}, CS 195/H195: Social Implications of Computer Technology
+
+%\hrule
+\section*{Guest Lectures}
+
+\years{2025}\textbf{Cybernetics, Counterculture, and Cyberculture}, CS 195/H195, UC Berkeley
 
 
+%\hrule
+\section*{Academic Service}
+
+\years{2026}Student Volunteer, ACM Conference on Human Factors in Computing Systems (CHI)
+\years{2025}Undergraduate Representative, EECS Faculty Search Committee, UC Berkeley
+\years{2025}Reviewer, New Interfaces for Musical Expression (NIME)
+\years{2025}Student Volunteer, ACM Conference on Hypertext \& Social Media (HT)
 
 
-%\vspace{1cm}
-\vfill{}
-%\hrulefill
+%\hrule
+\section*{Industry Experience}
 
-\begin{center}
-{\scriptsize  Last updated: \today\- •\- }
-\end{center}
+\years{2026}\textbf{Intern}, Gigi
 
+\years{2024}\textbf{Software Developer Intern}, Federal Reserve Board
+
+\years{2023--2024}\textbf{Software Engineer Intern}, InClass
+
+\label{LastPage}
 \end{document}
